@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PDF Display</title>
+</head>
+<body>
+
+
+<div class="parent" style = "display: flex;">
+
+    <div class="pdf_viewer">
+
+        <object data="{{ pdf_file }}" type="application/pdf" width="600" height="600">
+            <p>It appears you don't have a PDF plugin for this browser. No worries, you can <a href="{{ pdf_file }}">download the PDF</a>.</p>
+        </object>
+        
+        <p>Name of file: {{ pdf_file.split("/")[-1] }}</p>
+    </div>
+
+    <div class="asdfg">
+
+        <div class="input_name" style="margin-left: 10px;">
+            <label for="name_to_be_found">Enter name to find in document:</label>
+            <input type="text" name="name_to_be_found" id="name_to_be_found">
+        </div>
+        
+        <div class="find_name_button" style="text-align: center; margin-top: 10px;">
+            <input type="button" value="Find Name">
+        </div>
+
+    </div>
+    
+
+</div>
+
+
+</body>
+</html>
