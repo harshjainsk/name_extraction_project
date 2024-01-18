@@ -74,18 +74,44 @@ def get_file_from_frontend():
 @app.route("/name_of_file", methods = ['POST'])
 def name_of_file():
 
+    global uploaded_file_path
+
     if request.method == 'POST':
 
         file = request.files['file']
         print(file)
 
         temp_path = os.path.join("static","temp", file.filename)
+
+        uploaded_file_path = temp_path
+
         file.save(temp_path)
 
         print(temp_path)
 
 
-        return render_template("index2.html", pdf_file = temp_path)
+        return render_template("index2.html", pdf_file = temp_path,message="Document Upload Success")
+    
+
+@app.route("/find_name_in_pdf", methods = ['POST', 'GET'])
+def find_name_in_pdf():
+
+    if request.method == 'POST':
+
+        name_to_be_found = request.form.get('name_to_be_found')
+
+        print(name_to_be_found)
+
+        if uploaded_file_path:
+
+            result = apply_ocr_and_find_name(name_to_be_found.lower(), uploaded_file_path)
+            print(result)
+
+            if result is not None:
+
+                return render_template("index3.html", page_number=result['page number'], file = uploaded_file_path, message=f"name searched {result['name searched']} line number {result['line number']} page number {result['page number']}")
+            
+            return render_template("index2.html", pdf_file = uploaded_file_path, message="No Match found")
 
 if __name__ == '__main__':
     app.run(debug=True, port=5500)
