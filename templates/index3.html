@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PDF Display</title>
+    <!-- <style>
+        body {
+            width: 500px;
+            height: 600px;
+        }
+    </style> -->
+</head>
+<body>
+
+    <h1>{{message}}</h1>
+    <h1>{{ file }}#page={{ page_number }}</h1>
+    <embed src="{{ file }}#page={{ page_number }}" type="application/pdf" height="600px" width="600px"/>
+   
+    <!-- <embed src="../PassPort Appointment Receipt_organized.pdf" type="application/pdf"/> -->
+
+    <!-- <object data="../PassPort Appointment Receipt_organized.pdf#page=3" type="application/pdf" height="600px" width="600px"></object> -->
+
+</body>
+</html>
