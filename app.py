@@ -81,6 +81,10 @@ def name_of_file():
         file = request.files['file']
         print(file)
 
+        if str(file.filename).split(".")[-1] != 'pdf':
+            
+            return render_template('file_not_found_index.html', message = "Upload PDF files only")
+
         temp_path = os.path.join("static","temp", file.filename)
 
         uploaded_file_path = temp_path
