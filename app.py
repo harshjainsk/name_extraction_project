@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template
 from pdf2image import convert_from_path
-from PIL import Image
+from PIL import Image, ImageDraw
 import numpy as np
 
 import os
@@ -10,28 +10,58 @@ from paddleocr import PaddleOCR
 
 ocr = PaddleOCR(use_angle_cls=True, lang='en')
 
+def draw_bounding_box(image, coordinates):
+
+    draw = ImageDraw.Draw(image)
+
+    for i, box in enumerate(coordinates):
+    # for i, box in enumerate([temp_result[0][0]]):  # replace with coordinates
+        box = np.array(box[0]).astype(np.int32)
+        xmin = min(box[:, 0])
+        ymin = min(box[:, 1])
+        xmax = max(box[:, 0])
+        ymax = max(box[:, 1])
+        draw.rectangle((xmin, ymin, xmax, ymax), outline="red", width=10)
+        draw.text((xmin, ymin), f"{i}", fill="black")
+
+        return image
+
 
 def find_name_in_page(name, result):
 
     for idx in range(len(result)):
         res = result[idx]
-        # print(res)
-        # print("-----------------")
+
         for line_number in range(len(res)):
-            # print([res[line_number][1][0]])
-            # print("-----------------")
-
+            print([res[line_number][1][0]])
             textual_data = res[line_number][1][0].lower()
-
             if textual_data.find(name) >= 0:
+
+                print([res[line_number][0]])
                 return {
                     "name searched" : f"{name}",
                     "string extracted" : f"{textual_data}",
-                    "line number" : f"{line_number + 1}"
+                    "line number" : f"{line_number + 1}",
+                    "coordinates" : [[res[line_number][0]]]
                 }
+
+            print("-----------------")
+
 
     # return "Name not present in the document"
     return None
+
+    
+    
+def convert_images_to_pdf(list_of_images):
+
+    images = list_of_images
+
+    pdf_path = "static/temp/bbd1.pdf"
+        
+    images[0].save(
+        pdf_path, "PDF" ,resolution=100.0, save_all=True, append_images=images[1:]
+    )
 
 
 def apply_ocr_and_find_name(name, path_to_resume):
@@ -42,6 +72,7 @@ def apply_ocr_and_find_name(name, path_to_resume):
     for page_number in range(len(pages)):
 
         print(page_number)
+
         
 
         result = ocr.ocr(np.array(pages[page_number]), cls=True)  # Convert PIL image to NumPy array
@@ -54,10 +85,14 @@ def apply_ocr_and_find_name(name, path_to_resume):
         if name_found is not None:
 
             name_found["page number"] = f"{page_number + 1}"
+            
+            updated_image = draw_bounding_box(image=pages[page_number], coordinates=name_found['coordinates'])
+
+            pages[page_number] = updated_image
+
+            convert_images_to_pdf(pages)
 
             return name_found
-
-        # print(name_found)
 
 
 
@@ -113,7 +148,8 @@ def find_name_in_pdf():
 
             if result is not None:
 
-                return render_template("index3.html", page_number=result['page number'], file = uploaded_file_path, message=f"name searched {result['name searched']} line number {result['line number']} page number {result['page number']}")
+                return render_template("index3.html", page_number=result['page number'], file = "static\\temp\\bbd1.pdf",
+                                        message=f"name searched {result['name searched']} line number {result['line number']} page number {result['page number']}")
             
             return render_template("index2.html", pdf_file = uploaded_file_path, message="No Match found")
 
