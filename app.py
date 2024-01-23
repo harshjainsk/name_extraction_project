@@ -97,8 +97,11 @@ def apply_ocr_and_find_name(list_of_details, path_to_resume):
 
             convert_images_to_pdf(pages)
 
-            final_results.append(name_found)
+            dict_to_append = {
+                f"{name_found['name searched']}" : name_found
+            }
 
+            final_results.append(dict_to_append)
             # return name_found
 
     return final_results
@@ -158,14 +161,20 @@ def find_name_in_pdf():
 
         if uploaded_file_path:
 
+            global result
+
             result = apply_ocr_and_find_name(list_of_details, uploaded_file_path)
             print(result)
 
-            if result is not None:
+            if len(result) > 0:
                 
 
-                return render_template("index3.html", file = r"static\\temp\\bbd1.pdf",
-                                       main_file_path = uploaded_file_path, results = result)
+                # return render_template("index3.html", file = r"static\\temp\\bbd1.pdf",
+                #                        main_file_path = uploaded_file_path, results = result)
+
+
+                return render_template("index3.html", updated_file=r"static\\temp\\bbd1.pdf", results=result, main_file_path = uploaded_file_path)
+
 
 
                 # return render_template("index3.html", page_number=result['page number'], file = r"static\\temp\\bbd1.pdf",
@@ -173,6 +182,8 @@ def find_name_in_pdf():
                 #                         message=f"name searched {result['name searched']} line number {result['line number']} page number {result['page number']}")
             
             return render_template("index2.html", pdf_file = uploaded_file_path, message="No Match found")
+    
+    return render_template("index3.html", updated_file=r"static\\temp\\bbd1.pdf", results=result, main_file_path = uploaded_file_path)
         
 
 @app.route("/button_redirect", methods=['GET', 'POST'])
@@ -185,6 +196,7 @@ def button_redirect():
 
 @app.route("/dynamic-buttons", methods=['GET', 'POST'])
 def dynamic_buttons():
+
 
     result = [
         {
@@ -233,7 +245,8 @@ def dynamic_buttons():
 
     page_number = "3"
 
-    return render_template("dynamic_buttons.html", file=r"static\\temp\\bbd1.pdf", results=result, page_number=page_number)
+    return render_template("dynamic_buttons.html", file=r"static\\temp\\bbd1.pdf", results=result)
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5500)
