@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, jsonify
 from pdf2image import convert_from_path
 from PIL import Image, ImageDraw
 import numpy as np
@@ -27,7 +27,7 @@ def draw_bounding_box(image, coordinates):
         return image
 
 
-def find_name_in_page(name, result):
+def find_name_in_page(list_of_details, result):
 
     for idx in range(len(result)):
         res = result[idx]
@@ -35,17 +35,20 @@ def find_name_in_page(name, result):
         for line_number in range(len(res)):
             print([res[line_number][1][0]])
             textual_data = res[line_number][1][0].lower()
-            if textual_data.find(name) >= 0:
 
-                print([res[line_number][0]])
-                return {
-                    "name searched" : f"{name}",
-                    "string extracted" : f"{textual_data}",
-                    "line number" : f"{line_number + 1}",
-                    "coordinates" : [[res[line_number][0]]]
-                }
+            for detail in list_of_details:
 
-            print("-----------------")
+                if textual_data.find(detail) >= 0:
+
+                    print([res[line_number][0]])
+                    return {
+                        "name searched" : f"{detail}",
+                        "string extracted" : f"{textual_data}",
+                        "line number" : f"{line_number + 1}",
+                        "coordinates" : [[res[line_number][0]]]
+                    }
+
+                print("-----------------")
 
 
     # return "Name not present in the document"
@@ -64,10 +67,12 @@ def convert_images_to_pdf(list_of_images):
     )
 
 
-def apply_ocr_and_find_name(name, path_to_resume):
+def apply_ocr_and_find_name(list_of_details, path_to_resume):
 
 
     pages = convert_from_path(path_to_resume, 500, poppler_path='poppler-23.11.0/Library/bin')
+
+    final_results = []
 
     for page_number in range(len(pages)):
 
@@ -77,10 +82,10 @@ def apply_ocr_and_find_name(name, path_to_resume):
 
         result = ocr.ocr(np.array(pages[page_number]), cls=True)  # Convert PIL image to NumPy array
 
-        print(len(result[0]))
-        print("------------------------\n\n\n" )
+        # print(len(result[0]))
+        # print("------------------------\n\n\n" )
 
-        name_found = find_name_in_page(name, result)
+        name_found = find_name_in_page(list_of_details, result)
 
         if name_found is not None:
 
@@ -92,7 +97,11 @@ def apply_ocr_and_find_name(name, path_to_resume):
 
             convert_images_to_pdf(pages)
 
-            return name_found
+            final_results.append(name_found)
+
+            # return name_found
+
+    return final_results
 
 
 
@@ -138,20 +147,93 @@ def find_name_in_pdf():
     if request.method == 'POST':
 
         name_to_be_found = request.form.get('name_to_be_found')
+        deportation_text_to_be_found = request.form.get('text_to_be_found')
+        tranfer_cert_to_be_found = request.form.get('transfer_cert_to_be_found')
+
+        list_of_details = [name_to_be_found, deportation_text_to_be_found, tranfer_cert_to_be_found]
+
+        list_of_details = [x. lower() for x in list_of_details]
 
         print(name_to_be_found)
 
         if uploaded_file_path:
 
-            result = apply_ocr_and_find_name(name_to_be_found.lower(), uploaded_file_path)
+            result = apply_ocr_and_find_name(list_of_details, uploaded_file_path)
             print(result)
 
             if result is not None:
+                
 
-                return render_template("index3.html", page_number=result['page number'], file = "static\\temp\\bbd1.pdf",
-                                        message=f"name searched {result['name searched']} line number {result['line number']} page number {result['page number']}")
+                return render_template("index3.html", file = r"static\\temp\\bbd1.pdf",
+                                       main_file_path = uploaded_file_path, results = result)
+
+
+                # return render_template("index3.html", page_number=result['page number'], file = r"static\\temp\\bbd1.pdf",
+                #                        main_file_path = uploaded_file_path, results = jsonify(result),
+                #                         message=f"name searched {result['name searched']} line number {result['line number']} page number {result['page number']}")
             
             return render_template("index2.html", pdf_file = uploaded_file_path, message="No Match found")
+        
+
+@app.route("/button_redirect", methods=['GET', 'POST'])
+def button_redirect():
+    uploaded_file_path = r"static\\temp\\PassPort_Appointment_Receipt_organized_2.pdf"
+    page_number= "2"
+    return render_template("button_redirect.html", pdf_file = uploaded_file_path, file_path = r"static\\temp\\PassPort_Appointment_Receipt_organized_2.pdf", message="No Match found", page_number = page_number)
+
+
+
+@app.route("/dynamic-buttons", methods=['GET', 'POST'])
+def dynamic_buttons():
+
+    result = [
+        {
+            'harsh kumar': {
+                'name searched': 'harsh kumar',
+                'string extracted': 'harsh kumar',
+                'line number': '28',
+                'coordinates': [
+                    [[[904.0, 1504.0],
+                      [1328.0, 1504.0],
+                      [1328.0, 1571.0],
+                      [904.0, 1571.0]]]
+                ],
+                'page number': '1'
+            }
+        },
+        {
+            'b. transfer/school leaving/matriculation certificate issued by the school last attended/recognised educational board having the date of birth of the': {
+                'name searched': 'b. transfer/school leaving/matriculation certificate issued by the school last attended/recognised educational board having the date of birth of the',
+                'string extracted': 'b. transfer/school leaving/matriculation certificate issued by the school last attended/recognised educational board having the date of birth of the',
+                'line number': '88',
+                'coordinates': [
+                    [[[713.0, 5116.0],
+                      [3738.0, 5116.0],
+                      [3738.0, 5177.0],
+                      [713.0, 5177.0]]]
+                ],
+                'page number': '2'
+            }
+        },
+        {
+            '8.proof of refund of repatriation /deportation cost (if any) to ministry of external affairs': {
+                'name searched': '8.proof of refund of repatriation /deportation cost (if any) to ministry of external affairs',
+                'string extracted': '8.proof of refund of repatriation /deportation cost (if any) to ministry of external affairs',
+                'line number': '9',
+                'coordinates': [
+                    [[[498.0, 828.0],
+                      [2300.0, 828.0],
+                      [2300.0, 889.0],
+                      [498.0, 889.0]]]
+                ],
+                'page number': '3'
+            }
+        }
+    ]
+
+    page_number = "3"
+
+    return render_template("dynamic_buttons.html", file=r"static\\temp\\bbd1.pdf", results=result, page_number=page_number)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5500)
