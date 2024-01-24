@@ -18,16 +18,17 @@
     <div class="parent" style="display: flex;">
         <div class="pdfViewer">
             <!-- <embed id="pdfEmbed" src="{{ main_file_path }}#page={{ page_number }}" type="application/pdf" height="700px" width="700px"/> -->
+            <embed id="pdfDoc" src="{{file}}#page=1" type="application/pdf" height="700px" width="700px"/>
 
-            <embed id="pdfEmbed" src="{{ file }}" type="application/pdf" height="700px" width="700px"/>
+            <!-- <object data="{{ file }}#page=1" type="application/pdf" height="700px" width="700px"></object> -->
         </div>
     
         <div class="button">
             {% for result in results %}
                 {% for key, value in result.items() %}
-                    <input type="button" value="{{ key }}" class="myButton" style="width: 300px; height: 50px; margin: 40px;"
-                           data-page="{{ value['page number'] }}" onclick="updatePDFSource('{{ file }}', '{{ page_number }}', `{{ value['page number'] }}`)">
-                    <p>{{ value['page number'] }}</p>
+                <input type="button" value="{{ key }}" class="myButton" style="width: 300px; height: 50px; margin: 20px;"
+                data-page="{{ value['page number'] | int }}" onclick="updatePDFSource('{{ file }}', `{{ value['page number'] }}`)">
+         <p>{{ value['page number'] }}</p>
                 {% endfor %}
             {% endfor %}
         </div>
@@ -37,21 +38,43 @@
 </body>
 
 <script>
-    function updatePDFSource(file, currentPage, targetPage) {
-        const div = document.querySelector('.pdfViewer');
+    function updatePDFSource(file_to_display, targetPage) {
+        targetPage = parseInt(targetPage);
+        console.log(targetPage)
+        console.log(file_to_display)
 
-        console.log(`<embed src="${file}#page=${targetPage}"`)
-        div.innerHTML = `<embed src="${file}#page=${targetPage}" type="application/pdf" height="700px" width="700px"/>`;
+        // if(targetPage === 1){
+        //     console.log("page number is one")
+        // }
+        // else 
+        if(!isNaN(targetPage) && targetPage > 0){
+            // const div = document.querySelector('.pdfViewer');
+            const pdfDoc = document.getElementById('pdfDoc');
+            var clone = pdfDoc.cloneNode(true);
+            console.log(`${file_to_display}#page=` + targetPage)
+            clone.setAttribute('src', `${file_to_display}#page=` + targetPage)
+            // const pdfEmbed = `<embed src="${file_to_display}#page=${targetPage}" type="application/pdf" height="700px" width="700px"/>`;
+
+            // console.log(pdfEmbed);
+            // div.innerHTML = null
+            // div.innerHTML = pdfEmbed;
+
+            pdfDoc.parentNode.replaceChild(clone, pdfDoc)
+        }
+        
+        else{
+            console.log("target page value is not valid")
+
+        }
+        
     }
 
-    const buttons = document.querySelectorAll('.myButton');
-    buttons.forEach(button => {
-        button.addEventListener('click', function () {
-            const currentPage = "{{ page_number }}";
-            const targetPage = this.getAttribute('data-page');
-            updatePDFSource("{{ file }}", currentPage, targetPage);
-        });
-    });
+    // document.querySelectorAll('.myButton').forEach(button => {
+    //     button.addEventListener('click', function () {
+    //         const targetPage = this.getAttribute('data-page');
+    //         updatePDFSource("{{ file }}", targetPage);
+    //     });
+    // });
 </script>
 
 </html>
