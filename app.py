@@ -152,8 +152,13 @@ def find_name_in_pdf():
         name_to_be_found = request.form.get('name_to_be_found')
         deportation_text_to_be_found = request.form.get('text_to_be_found')
         tranfer_cert_to_be_found = request.form.get('transfer_cert_to_be_found')
+        Type_of_Application = request.form.get("Type_of_Application")
+        random_text = request.form.get("CPADIFOKI2")
 
-        list_of_details = [name_to_be_found, deportation_text_to_be_found, tranfer_cert_to_be_found]
+
+
+
+        list_of_details = [name_to_be_found, deportation_text_to_be_found, tranfer_cert_to_be_found, Type_of_Application, random_text]
 
         list_of_details = [x. lower() for x in list_of_details]
 
@@ -169,21 +174,12 @@ def find_name_in_pdf():
             if len(result) > 0:
                 
 
-                # return render_template("index3.html", file = r"static\\temp\\bbd1.pdf",
-                #                        main_file_path = uploaded_file_path, results = result)
-
-
                 return render_template("index3.html", updated_file=r"static\\temp\\bbd1.pdf", results=result, main_file_path = uploaded_file_path)
 
-
-
-                # return render_template("index3.html", page_number=result['page number'], file = r"static\\temp\\bbd1.pdf",
-                #                        main_file_path = uploaded_file_path, results = jsonify(result),
-                #                         message=f"name searched {result['name searched']} line number {result['line number']} page number {result['page number']}")
-            
+                
             return render_template("index2.html", pdf_file = uploaded_file_path, message="No Match found")
     
-    return render_template("index3.html", updated_file=r"static\\temp\\bbd1.pdf", results=result, main_file_path = uploaded_file_path)
+    # return render_template("index3.html", updated_file=r"static\\temp\\bbd1.pdf", results=result, main_file_path = uploaded_file_path)
         
 
 @app.route("/button_redirect", methods=['GET', 'POST'])
@@ -198,50 +194,47 @@ def button_redirect():
 def dynamic_buttons():
 
 
-    result = [
-        {
-            'harsh kumar': {
-                'name searched': 'harsh kumar',
-                'string extracted': 'harsh kumar',
-                'line number': '28',
-                'coordinates': [
-                    [[[904.0, 1504.0],
-                      [1328.0, 1504.0],
-                      [1328.0, 1571.0],
-                      [904.0, 1571.0]]]
-                ],
-                'page number': '1'
-            }
-        },
-        {
-            'b. transfer/school leaving/matriculation certificate issued by the school last attended/recognised educational board having the date of birth of the': {
-                'name searched': 'b. transfer/school leaving/matriculation certificate issued by the school last attended/recognised educational board having the date of birth of the',
-                'string extracted': 'b. transfer/school leaving/matriculation certificate issued by the school last attended/recognised educational board having the date of birth of the',
-                'line number': '88',
-                'coordinates': [
-                    [[[713.0, 5116.0],
-                      [3738.0, 5116.0],
-                      [3738.0, 5177.0],
-                      [713.0, 5177.0]]]
-                ],
-                'page number': '2'
-            }
-        },
-        {
-            '8.proof of refund of repatriation /deportation cost (if any) to ministry of external affairs': {
-                'name searched': '8.proof of refund of repatriation /deportation cost (if any) to ministry of external affairs',
-                'string extracted': '8.proof of refund of repatriation /deportation cost (if any) to ministry of external affairs',
-                'line number': '9',
-                'coordinates': [
-                    [[[498.0, 828.0],
-                      [2300.0, 828.0],
-                      [2300.0, 889.0],
-                      [498.0, 889.0]]]
-                ],
-                'page number': '3'
-            }
-        }
-    ]
+    result = [{'cpadifoki2': {'name searched': 'cpadifoki2',
+   'string extracted': 'cpadifoki2',
+   'line number': '25',
+   'coordinates': [[[[2709.0, 1442.0],
+      [3107.0, 1463.0],
+      [3102.0, 1548.0],
+      [2704.0, 1527.0]]]],
+   'page number': '1'}},
+ {'harsh kumar': {'name searched': 'harsh kumar',
+   'string extracted': 'harsh kumar',
+   'line number': '28',
+   'coordinates': [[[[904.0, 1504.0],
+      [1328.0, 1504.0],
+      [1328.0, 1571.0],
+      [904.0, 1571.0]]]],
+   'page number': '1'}},
+ {'type of application': {'name searched': 'type of application',
+   'string extracted': 'type of application',
+   'line number': '23',
+   'coordinates': [[[[215.0, 1413.0],
+      [713.0, 1413.0],
+      [713.0, 1492.0],
+      [215.0, 1492.0]]]],
+   'page number': '1'}},
+ {'b. transfer/school leaving/matriculation certificate issued by the school last attended/recognised educational board having the date of birth of the': {'name searched': 'b. transfer/school leaving/matriculation certificate issued by the school last attended/recognised educational board having the date of birth of the',
+   'string extracted': 'b. transfer/school leaving/matriculation certificate issued by the school last attended/recognised educational board having the date of birth of the',
+   'line number': '88',
+   'coordinates': [[[[713.0, 5116.0],
+      [3738.0, 5116.0],
+      [3738.0, 5177.0],
+      [713.0, 5177.0]]]],
+   'page number': '2'}},
+ {'8.proof of refund of repatriation /deportation cost (if any) to ministry of external affairs': {'name searched': '8.proof of refund of repatriation /deportation cost (if any) to ministry of external affairs',
+   'string extracted': '8.proof of refund of repatriation /deportation cost (if any) to ministry of external affairs',
+   'line number': '9',
+   'coordinates': [[[[498.0, 828.0],
+      [2300.0, 828.0],
+      [2300.0, 889.0],
+      [498.0, 889.0]]]],
+   'page number': '3'}}]
+
 
     page_number = "3"
 
