@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+<div class="parent" style="display: flex;">
+    <div class="pdfViewer">
+        <embed id="pdfEmbed" src="..\static\temp\PassPort Appointment Receipt_organized_2.pdf" type="application/pdf" height="700px" width="700px"/>
+    </div>
+
+    <div class="button">
+        <input type="button" value="Name is present on page 2" id="myButton" style="width: 300px; height: 50px; margin: 40px;" 
+        onclick="updatePDFSource()">
+    </div>
+</div>
+
+<!-- <script>
+    function updatePDFSource() {
+        var pdfEmbed = document.getElementById('pdfEmbed');
+        if (pdfEmbed) {
+            pdfEmbed.src = "..\\static\\temp\\PassPort_Appointment_Receipt.pdf"; // Replace with the path to your new PDF file
+        } else {
+            console.error('PDF viewer not found.');
+        }
+    }
+</script> -->
+
+<script>
+    // select the button and the div
+    const button = document.getElementById('myButton');
+    const div = document.querySelector('.pdfViewer'); // Change to use class instead of ID
+  
+    // define the function to change the HTML content
+    function changeContent() {
+        div.innerHTML = '<embed src="..\\static\\temp\\PassPort Appointment Receipt_organized_2.pdf#page=2" type="application/pdf" height="600px" width="600px"/>';
+    }
+  
+    // add event listener to the button
+    button.addEventListener('click', changeContent);
+</script>
+
+</body>
+</html>

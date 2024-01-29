@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PDF Display</title>
+</head>
+<body>
+
+    <h1>{{file}}</h1>
+   
+    <div class="parent" style="display: flex;">
+        <div class="pdfViewer">
+            <embed id="pdfEmbed" src="{{ file }}" type="application/pdf" height="700px" width="700px"/>
+        </div>
+    
+        <div class="button">
+            {% for i in range(results|length) %}
+                {% for key, value in results[i].items() %}
+                    <input type="button" value="{{ key }}" class="myButton" style="width: 300px; height: 50px; margin: 40px;"
+                           data-page="{{ value['page number'] }}" onclick="updatePDFSource('{{ file }}', '{{ value['page number'] }}')">
+                    <p>{{ value['page number'] }}</p>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+
+<script>
+    // Select the buttons and the div
+    const buttons = document.querySelectorAll('.myButton');
+    const div = document.querySelector('.pdfViewer');
+  
+    // Define the function to change the HTML content
+    function updatePDFSource(path_to_file, page_number_to_be_redirected) {
+        div.innerHTML = `<embed src="${path_to_file}#page=${page_number_to_be_redirected}" type="application/pdf" height="700px" width="700px"/>`;
+    }
+  
+    // Add event listeners to the buttons
+    buttons.forEach(button => {
+        button.addEventListener('click', function () {
+            const currentPage = "{{ page_number }}";
+            const targetPage = this.getAttribute('data-page');
+            updatePDFSource("{{ file }}", targetPage);
+        });
+    });
+</script>
+
+</body>
+</html>

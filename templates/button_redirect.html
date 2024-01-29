@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>PDF Display</title>
+    <!-- <style>
+        body {
+            width: 500px;
+            height: 600px;
+        }
+    </style> -->
+</head>
+<body>
+
+    <h1>{{file}}</h1>
+    <!-- <h1>{{ file }}#page={{ page_number }}</h1>
+    <embed src="{{ file }}#page={{ page_number }}&view=fitH" type="application/pdf" height="600px" width="600px"/> -->
+   
+    <div class="parent" style="display: flex;">
+        <div class="pdfViewer">
+            <embed id="pdfEmbed" src="{{ pdf_file }}#page={{ page_number }}" type="application/pdf" height="700px" width="700px"/>
+        </div>
+    
+        <div class="button">
+            <input type="button" value="Name is present on page {{ page_number }}" id="myButton" style="width: 300px; height: 50px; margin: 40px;" 
+            onclick="updatePDFSource()">    
+        </div>
+    </div>
+
+</body>
+
+<script>
+    // select the button and the div
+    const button = document.getElementById('myButton');
+    const div = document.querySelector('.pdfViewer');
+    const file_from_template = "{{ pdf_file }}"
+    const page_number_from_template = "{{ page_number }}";
+
+    // define the function to change the HTML content
+    function updatePDFSource() {
+        // const page_number = {{ page_number }}
+        // div.innerHTML = '<embed src="url_for({{ file }})" type="application/pdf" height="600px" width="600px"/>';
+        div.innerHTML = `<embed src="${file_from_template}#page=${page_number_from_template}" type="application/pdf" height="600px" width="600px"/>`;
+    }
+  
+    // add event listener to the button
+    button.addEventListener('click', updatePDFSource);
+    console.log("asdfghgfdsasdfgfds")
+</script>
+
+</html>
