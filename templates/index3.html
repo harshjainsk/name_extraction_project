@@ -11,13 +11,54 @@
 </head>
 <body>
 
-    <h1>{{message}}</h1>
-    <h1>{{ file }}#page={{ page_number }}</h1>
-    <embed src="{{ file }}#page={{ page_number }}" type="application/pdf" height="600px" width="600px"/>
+    <h1>{{file}}</h1>
+    <!-- <h1>{{ file }}#page={{ page_number }}</h1>
+    <embed src="{{ file }}#page={{ page_number }}&view=fitH" type="application/pdf" height="600px" width="600px"/> -->
    
-    <!-- <embed src="../PassPort Appointment Receipt_organized.pdf" type="application/pdf"/> -->
+    <div class="parent" style="display: flex;">
+        <div class="pdfViewer">
+            <!-- <embed id="pdfEmbed" src="{{ main_file_path }}#page={{ page_number }}" type="application/pdf" height="700px" width="700px"/> -->
 
-    <!-- <object data="../PassPort Appointment Receipt_organized.pdf#page=3" type="application/pdf" height="600px" width="600px"></object> -->
+            <embed id="pdfEmbed" src="{{ updated_file }}" type="application/pdf" height="700px" width="700px"/>
+        </div>
+    
+        
+
+            <div class="button">
+                {% for result in results %}
+                    {% for key, value in result.items() %}
+                        <input type="button" value="{{ key }}" class="myButton" style="width: 300px; height: 50px; margin: 40px;"
+                               data-page="{{ value['page number'] }}" onclick="updatePDFSource('{{ updated_file }}', `{{ value['page number'] }}`)">
+                               <!--  onclick="updatePDFSource('{{ updated_file }}', `{{ value['page number'] }}`)" -->
+                        <br/>
+                        <br/>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+
+
+        
+    </div>
 
 </body>
+
+<script>
+    function updatePDFSource(file, targetPage) {
+        const div = document.querySelector('.pdfViewer');
+
+        console.log(`<embed src="${file}#page=${targetPage}"`)
+        div.innerHTML = `<embed src="${file}#page=${targetPage}" type="application/pdf" height="700px" width="700px"/>`;
+    }
+
+    const buttons = document.querySelectorAll('.myButton');
+    buttons.forEach(button => {
+        button.addEventListener('click', function () {
+            
+            const targetPage = this.getAttribute('data-page');
+            console.log("inside button click")
+            updatePDFSource(file, targetPage);
+        });
+    });
+</script>
+
 </html>
